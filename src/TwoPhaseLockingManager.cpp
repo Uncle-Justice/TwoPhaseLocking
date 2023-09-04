@@ -5,19 +5,30 @@
 #include <thread>
 void TwoPhaseLockingManager::Transaction1(int j, int i) {
   std::cout << j << "  " << i << std::endl;
+  int iArr[3]{i, (i + 1) % ARRAYSIZE, (i + 2) % ARRAYSIZE};
   // 死锁的主要诱因
-  if (j == i || j == (i + 1) % ARRAYSIZE || j == (i + 2) % ARRAYSIZE) return;
+  // if (j == i || j == (i + 1) % ARRAYSIZE || j == (i + 2) % ARRAYSIZE) return;
 
-  // std::cout << j << "  " << i << std::endl;
-  if (i != j) mtx[i].RLock();
-  if ((i + 1) % ARRAYSIZE != j) mtx[i + 1].RLock();
-  if ((i + 2) % ARRAYSIZE != j) mtx[i + 2].RLock();
-  mtx[j].WLock();
+  for (int k = 0; k < 3; k++) {
+    if (iArr[k] != j) mtx[iArr[k]].RLock();
+  }
 
-  arr[j] = arr[i] + arr[(i + 1) % ARRAYSIZE] + arr[(i + 2) % ARRAYSIZE];
+  while (!mtx[j].WTryLockWithOvertime()) {
+    for (int k = 2; k >= 0; k--) {
+      if (iArr[k] != j) mtx[iArr[k]].RUnlock();
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(u(e)));
+
+    for (int k = 0; k < 3; k++) {
+      if (iArr[k] != j) mtx[iArr[k]].RLock();
+    }
+  }
+
+  arr[j] = arr[iArr[0]] + arr[iArr[1]] + arr[iArr[2]];
 
   mtx[j].WUnlock();
-  if ((i + 2) % ARRAYSIZE != j) mtx[i + 2].RUnlock();
-  if ((i + 1) % ARRAYSIZE != j) mtx[i + 1].RUnlock();
-  if (i != j) mtx[i].RUnlock();
+  for (int k = 2; k >= 0; k--) {
+    if (iArr[k] != j) mtx[iArr[k]].RUnlock();
+  }
 }

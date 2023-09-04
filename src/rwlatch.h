@@ -11,7 +11,9 @@ class ReaderWriterLatch {
    * Acquire a write latch.
    */
   void WLock() { mutex_.lock(); }
-
+  bool WTryLockWithOvertime(){
+    return mutex_.try_lock_for(std::chrono::milliseconds(2000));
+  }
   /**
    * Release a write latch.
    */
@@ -28,5 +30,5 @@ class ReaderWriterLatch {
   void RUnlock() { mutex_.unlock_shared(); }
 
  private:
-  std::shared_mutex mutex_;
+  std::shared_timed_mutex mutex_;
 };

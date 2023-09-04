@@ -5,6 +5,7 @@ target_sources(TwoPhaseLockingManager
     TwoPhaseLockingManager.cpp
   PUBLIC
     TwoPhaseLockingManager.h
+    rwlatch.h
   )
 
 target_include_directories(TwoPhaseLockingManager

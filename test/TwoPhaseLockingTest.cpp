@@ -10,10 +10,11 @@ int add(int a, int b) { return a + b; }
 
 TEST(testCase, test0) {
   TwoPhaseLockingManager *TPLManagerInstance = new TwoPhaseLockingManager();
-  int threadNum = 10;
-  int freq = 100;
+  int threadNum = 1024;
+  int freq = 10000;
+
   std::default_random_engine e;
-  std::uniform_int_distribution<int> u(0, 99999);  // 左闭右闭区间
+  std::uniform_int_distribution<int> u(0, 99999);
   e.seed(time(0));
 
   auto task = [&](int freq) {

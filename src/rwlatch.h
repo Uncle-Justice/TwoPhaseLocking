@@ -11,7 +11,7 @@ class ReaderWriterLatch {
    * Acquire a write latch.
    */
   void WLock() { mutex_.lock(); }
-  bool WTryLockWithOvertime(){
+  bool WTryLockWithOvertime() {
     return mutex_.try_lock_for(std::chrono::milliseconds(2000));
   }
   /**

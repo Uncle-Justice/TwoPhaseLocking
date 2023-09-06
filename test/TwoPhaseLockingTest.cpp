@@ -6,15 +6,17 @@
 #include <vector>
 
 #include "TwoPhaseLockingManager.h"
-int add(int a, int b) { return a + b; }
 
 TEST(testCase, test0) {
-  TwoPhaseLockingManager *TPLManagerInstance = new TwoPhaseLockingManager();
-  int threadNum = 1024;
+  int thread_num = 1024;
   int freq = 10000;
+  int array_size = 100000;
+  int lock_grau = 1;
+  TwoPhaseLockingManager *TPLManagerInstance =
+      new TwoPhaseLockingManager(array_size, lock_grau);
 
   std::default_random_engine e;
-  std::uniform_int_distribution<int> u(0, 99999);
+  std::uniform_int_distribution<int> u(0, array_size - 1);
   e.seed(time(0));
 
   auto task = [&](int freq) {
@@ -24,13 +26,13 @@ TEST(testCase, test0) {
   };
 
   std::vector<std::thread> threads;
-  threads.reserve(threadNum);
+  threads.reserve(thread_num);
 
-  for (int i = 0; i < threadNum; i++) {
+  for (int i = 0; i < thread_num; i++) {
     threads.emplace_back(std::thread(task, freq));
   }
 
-  for (int i = 0; i < threadNum; i++) {
+  for (int i = 0; i < thread_num; i++) {
     threads[i].join();
   }
   EXPECT_EQ(add(2, 3), 5);

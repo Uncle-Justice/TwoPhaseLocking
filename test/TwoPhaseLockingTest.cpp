@@ -35,7 +35,6 @@ TEST(testCase, test0) {
   for (int i = 0; i < thread_num; i++) {
     threads[i].join();
   }
-  EXPECT_EQ(add(2, 3), 5);
 }
 
 int main(int argc, char **argv) {
